@@ -1,9 +1,10 @@
 'use client';
 import { useEffect, useRef, useState, useMemo } from 'react';
 
-/* — simple 6-digit password — */
+/* =====================================
+   CONFIG & CONSTANTS
+===================================== */
 const ACCESS_CODE = '010808';
-
 const YEVA = 'Yeva';
 const HER_TIMEZONE_RAW = 'America/Tijuana';
 const YOUR_TIMEZONE_RAW = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -11,7 +12,7 @@ const YOUR_TIMEZONE_RAW = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const TAGLINE = "My Baby's website Website";
 const QUOTE =
   '“Have I not commanded you? Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go. – Joshua 1:9”';
-/* — Open-when letters — */
+
 const OPEN_WHEN = [
   {
     title: 'Open when you can’t sleep',
@@ -50,7 +51,52 @@ const OPEN_WHEN = [
   },
 ];
 
-/* — helpers — */
+/* =====================================
+   HOOKS
+===================================== */
+
+/** Detects if viewport ≥ 768 px (desktop). */
+function useIsDesktop(query = '(min-width: 768px)') {
+  const [isDesktop, setIsDesktop] = useState<boolean>(() => {
+    if (typeof window === 'undefined' || !('matchMedia' in window)) return false;
+    return window.matchMedia(query).matches;
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !('matchMedia' in window)) return;
+    const mql = window.matchMedia(query);
+    const onChange = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    setIsDesktop(mql.matches);
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, [query]);
+
+  return isDesktop;
+}
+
+/** Returns continuously updating Date (for analog clock). */
+function useNow(frame = true) {
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => {
+    setNow(new Date());
+    if (!frame) {
+      const id = setInterval(() => setNow(new Date()), 1000);
+      return () => clearInterval(id);
+    }
+    let rafId: number;
+    const tick = () => {
+      setNow(new Date());
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [frame]);
+  return now;
+}
+
+/* =====================================
+   HELPERS
+===================================== */
 function safeTimeZone(tz: string, fallback = 'UTC') {
   try {
     new Intl.DateTimeFormat('en-US', { timeZone: tz });
@@ -60,33 +106,9 @@ function safeTimeZone(tz: string, fallback = 'UTC') {
   }
 }
 
-export function useNow(frame: boolean = true): Date | null {
-  const [now, setNow] = useState<Date | null>(null);
-
-  useEffect(() => {
-    setNow(new Date());
-
-    if (!frame) {
-      // Mode 1: update once per second using setInterval
-      const id = setInterval(() => setNow(new Date()), 1000);
-      return () => clearInterval(id);
-    }
-
-    // Mode 2: update continuously via requestAnimationFrame
-    let rafId: number;
-    const tick = () => {
-      setNow(new Date());
-      rafId = requestAnimationFrame(tick);
-    };
-    rafId = requestAnimationFrame(tick);
-
-    return () => cancelAnimationFrame(rafId);
-  }, [frame]);
-
-  return now;
-}
-
-/* — Small Analog Clock — */
+/* =====================================
+   SMALL ANALOG CLOCK COMPONENT
+===================================== */
 function SmallClock({ tz, label }: { tz: string; label: string }) {
   const now = useNow(true);
   const parts = useMemo(() => {
@@ -149,19 +171,21 @@ function SmallClock({ tz, label }: { tz: string; label: string }) {
   );
 }
 
-/* — Main Page — */
+/* =====================================
+   MAIN PAGE COMPONENT
+===================================== */
 type VersePayload = { reference: string; text: string; translation?: string };
 
 export default function Page() {
   const [authorized, setAuthorized] = useState(false);
   const [input, setInput] = useState('');
   const [error, setError] = useState('');
-  const [mounted, setMounted] = useState(false);
-  const [introDone, setIntroDone] = useState(false);
-  const [openLetter, setOpenLetter] = useState<number | null>(null);
-  const fillRef = useRef<SVGTextElement | null>(null);
 
-  // Verse state (fetched on demand from /api/verses)
+  const isDesktop = useIsDesktop();
+  const [introDone, setIntroDone] = useState<boolean>(() => !isDesktop);
+  const fillRef = useRef<SVGTextElement | null>(null);
+  const [openLetter, setOpenLetter] = useState<number | null>(null);
+
   const [verse, setVerse] = useState<VersePayload | null>(null);
   const [loadingVerse, setLoadingVerse] = useState(false);
   const [verseError, setVerseError] = useState('');
@@ -169,43 +193,44 @@ export default function Page() {
   const HER_TIMEZONE = useMemo(() => safeTimeZone(HER_TIMEZONE_RAW), []);
   const YOUR_TIMEZONE = useMemo(() => safeTimeZone(YOUR_TIMEZONE_RAW), []);
 
+  // ensure fonts loaded before starting animation
+  useEffect(() => {
+    const ready = (document as any).fonts?.ready;
+    if (ready) ready.then(() => document.documentElement.classList.add('fonts-ready'));
+    else document.documentElement.classList.add('fonts-ready');
+  }, []);
+
+  // automatically mark intro done after animation duration (desktop only)
+  useEffect(() => {
+    if (!authorized || !isDesktop || introDone) return;
+    const id = window.setTimeout(() => setIntroDone(true), 2800);
+    return () => clearTimeout(id);
+  }, [authorized, isDesktop, introDone]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (input === ACCESS_CODE) setAuthorized(true);
     else setError('Incorrect code. Please try again.');
   };
 
-  useEffect(() => setMounted(true), []);
-  useEffect(() => {
-    if (!authorized || !mounted) return;
-    const el = fillRef.current;
-    const show = () => setIntroDone(true);
-    if (el) {
-      el.addEventListener('animationend', show, { once: true });
-      return () => el.removeEventListener('animationend', show);
+  async function fetchRandomVerse() {
+    try {
+      setLoadingVerse(true);
+      setVerseError('');
+      const res = await fetch('/api/verses', { cache: 'no-store' });
+      if (!res.ok) throw new Error(`Failed to fetch verse (${res.status})`);
+      const data = (await res.json()) as VersePayload;
+      setVerse({ reference: data.reference, text: data.text, translation: data.translation });
+    } catch (e: unknown) {
+      setVerse(null);
+      const msg = e instanceof Error ? e.message : 'Failed to load verse.';
+      setVerseError(msg);
+    } finally {
+      setLoadingVerse(false);
     }
-    const t = setTimeout(show, 2000);
-    return () => clearTimeout(t);
-  }, [authorized, mounted]);
-
-async function fetchRandomVerse() {
-  try {
-    setLoadingVerse(true);
-    setVerseError('');
-    const res = await fetch('/api/verses', { cache: 'no-store' });
-    if (!res.ok) throw new Error(`Failed to fetch verse (${res.status})`);
-    const data = (await res.json()) as VersePayload;
-    setVerse({ reference: data.reference, text: data.text, translation: data.translation });
-  } catch (e: unknown) {
-    setVerse(null);
-    const msg = e instanceof Error ? e.message : 'Failed to load verse.';
-    setVerseError(msg);
-  } finally {
-    setLoadingVerse(false);
   }
-}
 
-  /* PASSWORD GATE */
+  /* ========== PASSWORD GATE ========== */
   if (!authorized) {
     return (
       <div className="passwordGate">
@@ -229,12 +254,12 @@ async function fetchRandomVerse() {
     );
   }
 
-  /* AFTER UNLOCK */
+  /* ========== MAIN CONTENT (with conditional intro) ========== */
   return (
     <main className="main" style={{ overflow: 'hidden', position: 'relative' }}>
-      {/* Yeva intro */}
-      {!introDone && (
-        <div className="introName">
+      {/* Desktop-only YEVA intro */}
+      {isDesktop && !introDone && (
+        <div className="introName" aria-hidden="true">
           <svg
             viewBox="0 0 1000 300"
             preserveAspectRatio="xMidYMid meet"
@@ -244,14 +269,22 @@ async function fetchRandomVerse() {
             <text x="50%" y="60%" className="stroke" textAnchor="middle" style={{ fontSize: '160px' }}>
               {YEVA}
             </text>
-            <text x="50%" y="60%" className="fill" textAnchor="middle" style={{ fontSize: '160px' }} ref={fillRef}>
+            <text
+              x="50%"
+              y="60%"
+              className="fill"
+              textAnchor="middle"
+              style={{ fontSize: '160px' }}
+              ref={fillRef}
+              onAnimationEnd={() => setIntroDone(true)}
+            >
               {YEVA}
             </text>
           </svg>
         </div>
       )}
 
-      {/* Main content */}
+      {/* MAIN CARD */}
       <section
         className="card"
         style={{
@@ -262,10 +295,8 @@ async function fetchRandomVerse() {
         }}
       >
         <h1 style={{ color: 'var(--accent-3)', marginBottom: 8 }}>{TAGLINE}</h1>
-        {/* Keep your original, fixed quote */}
         <p style={{ color: 'var(--muted)', fontStyle: 'italic', marginBottom: 20 }}>{QUOTE}</p>
 
-        {/* Open modal and fetch ONE random verse from your API */}
         <button
           onClick={() => {
             setOpenLetter(999);
@@ -275,7 +306,7 @@ async function fetchRandomVerse() {
           Get a verse I found for you
         </button>
 
-        {/* open-when letters */}
+        {/* OPEN-WHEN GRID */}
         <div style={{ margin: '30px auto 8px', maxWidth: 760, textAlign: 'left' }}>
           <h2 style={{ fontSize: 18, color: 'var(--accent)', marginBottom: 10 }}>Open when…</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
@@ -311,10 +342,10 @@ async function fetchRandomVerse() {
           </div>
         </div>
 
-        {/* two small clocks */}
+        {/* CLOCKS */}
         <div className="clockGrid" style={{ marginTop: 32 }}>
           <SmallClock tz={YOUR_TIMEZONE} label="My time" />
-          <SmallClock tz={HER_TIMEZONE} label={`Your time`} />
+          <SmallClock tz={HER_TIMEZONE} label="Your time" />
         </div>
 
         <footer style={{ marginTop: 40, color: 'var(--muted)', fontSize: 13 }}>
@@ -322,7 +353,7 @@ async function fetchRandomVerse() {
         </footer>
       </section>
 
-      {/* Modals */}
+      {/* VERSE MODAL */}
       {openLetter === 999 && (
         <div className="modalBack" role="dialog" aria-modal="true">
           <div className="modal" style={{ maxWidth: 640 }}>
@@ -335,12 +366,8 @@ async function fetchRandomVerse() {
                 <button onClick={() => setOpenLetter(null)}>Close</button>
               </div>
             </div>
-
-            {/* Status / errors */}
             {loadingVerse && !verse && <p>Loading verse…</p>}
             {verseError && !verse && <p style={{ color: 'crimson' }}>{verseError}</p>}
-
-            {/* Single verse body */}
             <pre
               className="letter-body"
               style={{
@@ -359,6 +386,7 @@ async function fetchRandomVerse() {
         </div>
       )}
 
+      {/* LETTER MODALS */}
       {openLetter !== null && openLetter !== 999 && (
         <div className="modalBack" role="dialog" aria-modal="true">
           <div className="modal" style={{ maxWidth: 640 }}>
