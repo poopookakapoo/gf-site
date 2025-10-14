@@ -60,22 +60,29 @@ function safeTimeZone(tz: string, fallback = 'UTC') {
   }
 }
 
-function useNow(frame = true) {
+export function useNow(frame: boolean = true): Date | null {
   const [now, setNow] = useState<Date | null>(null);
+
   useEffect(() => {
     setNow(new Date());
+
     if (!frame) {
+      // Mode 1: update once per second using setInterval
       const id = setInterval(() => setNow(new Date()), 1000);
       return () => clearInterval(id);
     }
-    let rafId = 0;
+
+    // Mode 2: update continuously via requestAnimationFrame
+    let rafId: number;
     const tick = () => {
       setNow(new Date());
       rafId = requestAnimationFrame(tick);
     };
     rafId = requestAnimationFrame(tick);
+
     return () => cancelAnimationFrame(rafId);
   }, [frame]);
+
   return now;
 }
 
@@ -180,7 +187,7 @@ export default function Page() {
     const t = setTimeout(show, 2000);
     return () => clearTimeout(t);
   }, [authorized, mounted]);
-  
+
 async function fetchRandomVerse() {
   try {
     setLoadingVerse(true);
