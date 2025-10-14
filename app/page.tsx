@@ -11,8 +11,6 @@ const YOUR_TIMEZONE_RAW = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const TAGLINE = "My Baby's website Website";
 const QUOTE =
   '“Have I not commanded you? Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go. – Joshua 1:9”';
-const LETTER = `Well usually every month I give you some flowers and snacks but I uhm this month i really cant afford it and I'm so sorry baby princess BUT i made you this website! Which i hope you like hahaha. I love you forever and more baby. MWAHHHHHH. Everyday I wake up knowing that even when I was sleeping I have an amazing gf that texted me, that showed me smth she thought it was cool, that spammed me of tiktoks, so since the moment i open my eyes I know that someone loves me at any time of the day and Yeva, I'm so grateful that that person is you. You're not simply my gf, you're the love of my life. You matter so much for me, every second of the day youre always in my mind. Idk who to thank except god for giving me such an amazing gf that im so grateful to have every single day. You're the light of my life tha guides me to be a better man. I love you so much Yeva `;
-
 /* — Open-when letters — */
 const OPEN_WHEN = [
   {
