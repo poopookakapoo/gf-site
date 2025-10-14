@@ -105,8 +105,10 @@ p { margin: 0; line-height: 1.7; color: var(--muted); }
   font-weight: 400;
   letter-spacing: 1px;
   font-size: 160px;
+  text-rendering: geometricPrecision;
 }
 
+/* Stroke: desktop animation only */
 .stroke {
   fill: transparent;
   stroke: var(--accent);
@@ -115,18 +117,62 @@ p { margin: 0; line-height: 1.7; color: var(--muted); }
   stroke-dasharray: 1200;
   stroke-dashoffset: 1200;
   animation: draw 2s ease forwards;
+  animation-play-state: paused; /* wait until fonts-ready */
   filter: drop-shadow(0 0 18px rgba(255, 179, 200, 0.5));
+  paint-order: stroke fill;
+  will-change: stroke-dashoffset;
 }
 
+/* Fill: fades in after stroke completes */
 .fill {
-  fill: transparent;
+  fill: var(--accent);
+  opacity: 0;
   stroke: transparent;
-  animation: fill 1.2s ease forwards;
-  animation-delay: 1.7s;
+  animation: fillOpacity 0.8s ease forwards;
+  animation-delay: 2.05s;
+  animation-play-state: paused; /* wait until fonts-ready */
   filter: drop-shadow(0 0 26px rgba(255, 179, 200, 0.7));
+  will-change: opacity;
 }
+
 @keyframes draw { to { stroke-dashoffset: 0; } }
-@keyframes fill { to { fill: var(--accent); } }
+@keyframes fillOpacity { to { opacity: 1; } }
+
+/* === Enable animation only when font is ready AND on desktop === */
+html.fonts-ready .stroke,
+html.fonts-ready .fill {
+  animation-play-state: running;
+}
+
+/* === MOBILE / TABLET: skip animation, show filled instantly === */
+@media (max-width: 767px) {
+  .stroke {
+    animation: none !important;
+    stroke-dashoffset: 0;
+  }
+  .fill {
+    animation: none !important;
+    opacity: 1;
+  }
+}
+
+/* === Reduced motion: always skip === */
+@media (prefers-reduced-motion: reduce) {
+  .stroke {
+    animation: none !important;
+    stroke-dashoffset: 0;
+  }
+  .fill {
+    animation: none !important;
+    opacity: 1;
+  }
+}
+
+/* === Smaller font for mobile === */
+@media (max-width: 640px) {
+  .name text, .stroke, .fill { font-size: 120px; }
+}
+
 
 /* =====================================
    CARD
