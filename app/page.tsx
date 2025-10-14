@@ -202,10 +202,26 @@ export default function Page() {
 
   // ensure fonts loaded before starting animation
   useEffect(() => {
-    const ready = (document as any).fonts?.ready;
-    if (ready) ready.then(() => document.documentElement.classList.add('fonts-ready'));
-    else document.documentElement.classList.add('fonts-ready');
+    // Type-safe access to document.fonts
+    const docWithFonts = document as Document & { fonts?: FontFaceSet };
+    const fonts = docWithFonts.fonts;
+    const ready: Promise<FontFaceSet> | undefined = fonts?.ready;
+
+    if (ready) {
+      ready
+        .then(() => {
+          document.documentElement.classList.add('fonts-ready');
+        })
+        .catch(() => {
+          // Even if font loading fails, ensure the class is applied
+          document.documentElement.classList.add('fonts-ready');
+        });
+    } else {
+      // Fallback: browser has no FontFaceSet API
+      document.documentElement.classList.add('fonts-ready');
+    }
   }, []);
+
 
   // automatically mark intro done after animation duration (desktop only)
   useEffect(() => {
