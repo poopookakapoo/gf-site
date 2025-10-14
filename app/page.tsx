@@ -74,23 +74,30 @@ function useIsDesktop(query = '(min-width: 768px)') {
   return isDesktop;
 }
 
-/** Returns continuously updating Date (for analog clock). */
-function useNow(frame = true) {
+export function useNow(frame: boolean = true): Date | null {
   const [now, setNow] = useState<Date | null>(null);
+
   useEffect(() => {
+    // Initialize once on mount
     setNow(new Date());
+
     if (!frame) {
-      const id = setInterval(() => setNow(new Date()), 1000);
-      return () => clearInterval(id);
+      // Update every 1 second — lighter for static clocks or timestamps
+      const intervalId = window.setInterval(() => setNow(new Date()), 1000);
+      return () => clearInterval(intervalId);
     }
-    let rafId: number;
+
+    // High-frequency updates — smoother for analog clock animation
+    let rafId = 0;
     const tick = () => {
       setNow(new Date());
       rafId = requestAnimationFrame(tick);
     };
     rafId = requestAnimationFrame(tick);
+
     return () => cancelAnimationFrame(rafId);
   }, [frame]);
+
   return now;
 }
 
