@@ -180,22 +180,23 @@ export default function Page() {
     const t = setTimeout(show, 2000);
     return () => clearTimeout(t);
   }, [authorized, mounted]);
-
-  async function fetchRandomVerse() {
-    try {
-      setLoadingVerse(true);
-      setVerseError('');
-      const res = await fetch('/api/verses', { cache: 'no-store' });
-      if (!res.ok) throw new Error(`Failed to fetch verse (${res.status})`);
-      const data = (await res.json()) as VersePayload;
-      setVerse({ reference: data.reference, text: data.text, translation: data.translation });
-    } catch (e: any) {
-      setVerse(null);
-      setVerseError(e?.message ?? 'Failed to load verse.');
-    } finally {
-      setLoadingVerse(false);
-    }
+  
+async function fetchRandomVerse() {
+  try {
+    setLoadingVerse(true);
+    setVerseError('');
+    const res = await fetch('/api/verses', { cache: 'no-store' });
+    if (!res.ok) throw new Error(`Failed to fetch verse (${res.status})`);
+    const data = (await res.json()) as VersePayload;
+    setVerse({ reference: data.reference, text: data.text, translation: data.translation });
+  } catch (e: unknown) {
+    setVerse(null);
+    const msg = e instanceof Error ? e.message : 'Failed to load verse.';
+    setVerseError(msg);
+  } finally {
+    setLoadingVerse(false);
   }
+}
 
   /* PASSWORD GATE */
   if (!authorized) {
