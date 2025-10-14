@@ -9,9 +9,9 @@ const HER_TIMEZONE_RAW = 'America/Tijuana';
 const YOUR_TIMEZONE_RAW = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const TAGLINE = "My Baby's website Website";
-const QUOTE = '“Have I not commanded you? Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go. – Joshua 1:9”';
+const QUOTE =
+  '“Have I not commanded you? Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go. – Joshua 1:9”';
 const LETTER = `Well usually every month I give you some flowers and snacks but I uhm this month i really cant afford it and I'm so sorry baby princess BUT i made you this website! Which i hope you like hahaha. I love you forever and more baby. MWAHHHHHH. Everyday I wake up knowing that even when I was sleeping I have an amazing gf that texted me, that showed me smth she thought it was cool, that spammed me of tiktoks, so since the moment i open my eyes I know that someone loves me at any time of the day and Yeva, I'm so grateful that that person is you. You're not simply my gf, you're the love of my life. You matter so much for me, every second of the day youre always in my mind. Idk who to thank except god for giving me such an amazing gf that im so grateful to have every single day. You're the light of my life tha guides me to be a better man. I love you so much Yeva `;
-
 
 /* — Open-when letters — */
 const OPEN_WHEN = [
@@ -40,10 +40,15 @@ const OPEN_WHEN = [
     hint: 'Take a nap or make sum coffee idk babe',
     body: `AWWWWWWWW HEHE is my baby princess sleepy HEHE SOSOSOSOSOSOSOSO adorable and cute HEHEHE MWAH MWAH MWAH MWAH MWAH MWAH cmere and sleep in my arms baby princess`,
   },
-    {
+  {
     title: 'Open when you need some love',
     hint: 'Cmere my gorgeous baby princess',
     body: `HEHEHEHEHEHEHEHE what am i here for if NOT to show u some love hehehehe MWAH MWAH MWAH MWAH MWAH I love you SOSOSOSOSOSO much sweet baby princess MWAHHHHHHHHHHH`,
+  },
+  {
+    title: 'Open when youre sick',
+    hint: 'GRRRRRRR NOT GOOD',
+    body: `AWHHH My poor baby princess :( if youre reading sick is because youre sick and maybe is late at night and you cant sleep eiher. Well make sure youre well covered that you keep yoursel ALLLL warm and to relax. Maybe pray a little and then NO MORE PHONE OKAY?? I love you SOOOOOO much sweet baby princess be strong and you WILL feel better MWAH MWAH MWAH MWAH`,
   },
 ];
 
@@ -140,6 +145,8 @@ function SmallClock({ tz, label }: { tz: string; label: string }) {
 }
 
 /* — Main Page — */
+type VersePayload = { reference: string; text: string; translation?: string };
+
 export default function Page() {
   const [authorized, setAuthorized] = useState(false);
   const [input, setInput] = useState('');
@@ -149,13 +156,18 @@ export default function Page() {
   const [openLetter, setOpenLetter] = useState<number | null>(null);
   const fillRef = useRef<SVGTextElement | null>(null);
 
+  // Verse state (fetched on demand from /api/verses)
+  const [verse, setVerse] = useState<VersePayload | null>(null);
+  const [loadingVerse, setLoadingVerse] = useState(false);
+  const [verseError, setVerseError] = useState('');
+
   const HER_TIMEZONE = useMemo(() => safeTimeZone(HER_TIMEZONE_RAW), []);
   const YOUR_TIMEZONE = useMemo(() => safeTimeZone(YOUR_TIMEZONE_RAW), []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (input === ACCESS_CODE) setAuthorized(true);
-    else setError('Incorrect code try again nig');
+    else setError('Incorrect code. Please try again.');
   };
 
   useEffect(() => setMounted(true), []);
@@ -170,6 +182,22 @@ export default function Page() {
     const t = setTimeout(show, 2000);
     return () => clearTimeout(t);
   }, [authorized, mounted]);
+
+  async function fetchRandomVerse() {
+    try {
+      setLoadingVerse(true);
+      setVerseError('');
+      const res = await fetch('/api/verses', { cache: 'no-store' });
+      if (!res.ok) throw new Error(`Failed to fetch verse (${res.status})`);
+      const data = (await res.json()) as VersePayload;
+      setVerse({ reference: data.reference, text: data.text, translation: data.translation });
+    } catch (e: any) {
+      setVerse(null);
+      setVerseError(e?.message ?? 'Failed to load verse.');
+    } finally {
+      setLoadingVerse(false);
+    }
+  }
 
   /* PASSWORD GATE */
   if (!authorized) {
@@ -228,9 +256,18 @@ export default function Page() {
         }}
       >
         <h1 style={{ color: 'var(--accent-3)', marginBottom: 8 }}>{TAGLINE}</h1>
+        {/* Keep your original, fixed quote */}
         <p style={{ color: 'var(--muted)', fontStyle: 'italic', marginBottom: 20 }}>{QUOTE}</p>
 
-        <button onClick={() => setOpenLetter(999)}>Open your letter</button>
+        {/* Open modal and fetch ONE random verse from your API */}
+        <button
+          onClick={() => {
+            setOpenLetter(999);
+            fetchRandomVerse();
+          }}
+        >
+          Get a verse I found for you
+        </button>
 
         {/* open-when letters */}
         <div style={{ margin: '30px auto 8px', maxWidth: 760, textAlign: 'left' }}>
@@ -284,17 +321,33 @@ export default function Page() {
         <div className="modalBack" role="dialog" aria-modal="true">
           <div className="modal" style={{ maxWidth: 640 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-              <strong style={{ color: '#3a252a' }}>Letter</strong>
-              <button onClick={() => setOpenLetter(null)}>Close</button>
+              <strong style={{ color: '#3a252a' }}>A verse for you</strong>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={fetchRandomVerse} disabled={loadingVerse}>
+                  {loadingVerse ? 'Loading…' : 'Another verse'}
+                </button>
+                <button onClick={() => setOpenLetter(null)}>Close</button>
+              </div>
             </div>
-            <pre className="letter-body" style={{
-              margin: 0,
-              whiteSpace: 'pre-wrap',
-              fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
-              lineHeight: 1.7,
-              fontSize: 15.5,
-            }}>
-{LETTER}
+
+            {/* Status / errors */}
+            {loadingVerse && !verse && <p>Loading verse…</p>}
+            {verseError && !verse && <p style={{ color: 'crimson' }}>{verseError}</p>}
+
+            {/* Single verse body */}
+            <pre
+              className="letter-body"
+              style={{
+                margin: 0,
+                whiteSpace: 'pre-wrap',
+                fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
+                lineHeight: 1.7,
+                fontSize: 15.5,
+              }}
+            >
+{verse
+  ? `“${verse.text}”\n— ${verse.reference}${verse.translation ? ` (${verse.translation})` : ''}`
+  : 'No verse yet. Click “Another verse”.'}
             </pre>
           </div>
         </div>
@@ -307,13 +360,16 @@ export default function Page() {
               <strong style={{ color: '#3a252a' }}>{OPEN_WHEN[openLetter].title}</strong>
               <button onClick={() => setOpenLetter(null)}>Close</button>
             </div>
-            <pre className="letter-body" style={{
-              margin: 0,
-              whiteSpace: 'pre-wrap',
-              fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
-              lineHeight: 1.7,
-              fontSize: 15.5,
-            }}>
+            <pre
+              className="letter-body"
+              style={{
+                margin: 0,
+                whiteSpace: 'pre-wrap',
+                fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
+                lineHeight: 1.7,
+                fontSize: 15.5,
+              }}
+            >
 {OPEN_WHEN[openLetter].body}
             </pre>
           </div>
