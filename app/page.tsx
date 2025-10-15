@@ -49,6 +49,11 @@ const OPEN_WHEN = [
     hint: 'GRRRRRRR NOT GOOD',
     body: `AWHHH My poor baby princess :( if youre reading sick is because youre sick and maybe is late at night and you cant sleep eiher. Well make sure youre well covered that you keep yoursel ALLLL warm and to relax. Maybe pray a little and then NO MORE PHONE OKAY?? I love you SOOOOOO much sweet baby princess be strong and you WILL feel better MWAH MWAH MWAH MWAH`,
   },
+    {
+    title: 'Open when you wanna relax',
+    hint: 'Ofc my gorgeous baby princess needs to relax',
+    body: `AWWW my baby princess wants to take some time for herself HEHE adorable. Grab some snacks, smth to drink, a blanket and ENJOY urself, ik, is hard to be as gorgeous as u are sweet princess MWAAAAAAAHHHHHH I love you SOOSOSOSO much (btw if im spamming u and u wanna relax)`,
+  },
 ];
 
 /* =====================================
