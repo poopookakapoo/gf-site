@@ -46,7 +46,7 @@ const OPEN_WHEN = [
   },
   {
     title: 'Open when youre sick',
-    hint: 'GRRRRRRR NOT GOOD',
+    hint: 'GRRRRRRR NOT GOOD but is not ur fault and a gorgeous baby sometimes is sick',
     body: `AWHHH My poor baby princess :( if youre reading sick is because youre sick and maybe is late at night and you cant sleep eiher. Well make sure youre well covered that you keep yoursel ALLLL warm and to relax. Maybe pray a little and then NO MORE PHONE OKAY?? I love you SOOOOOO much sweet baby princess be strong and you WILL feel better MWAH MWAH MWAH MWAH`,
   },
     {
