@@ -1,0 +1,258 @@
+.reasonCard {
+  margin-top: 80px;
+  padding: 34px 26px 26px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* soft inner glow at the top of the card */
+.reasonCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      900px 400px at 50% -10%,
+      rgba(255, 174, 197, 0.35),
+      transparent 60%
+    );
+  opacity: 0.75;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.reasonCard > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* header */
+
+.header {
+  margin-bottom: 20px;
+}
+
+.overline {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0.8;
+  margin-bottom: 4px;
+}
+
+.title {
+  margin: 0;
+  font-family: "Fleur De Leah", cursive;
+  font-size: 2.6rem;
+  line-height: 1.1;
+  color: var(--accent-3);
+  text-shadow: 0 0 16px rgba(255, 174, 197, 0.35);
+}
+
+.subtitle {
+  margin: 6px 0 0;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+/* main reason box */
+
+.reasonBox {
+  margin: 24px auto 26px;
+  padding: 20px 18px 22px;
+  max-width: 560px;
+  border-radius: 18px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 174, 197, 0.14),
+      rgba(255, 215, 179, 0.18)
+    ),
+    var(--surface-2);
+  border: 1px solid rgba(255, 233, 214, 0.35);
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 248, 251, 0.08);
+  backdrop-filter: blur(14px) saturate(120%);
+  animation: fadeInUp 0.35s ease-out;
+}
+
+.reasonText {
+  margin: 0;
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: var(--ink);
+}
+
+/* controls */
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 2px;
+}
+
+.primaryButton,
+.secondaryButton {
+  min-width: 110px;
+  border-radius: 999px;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.2s ease,
+    filter 0.16s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+  white-space: nowrap;
+}
+
+/* override global button style specifically here */
+.primaryButton,
+.secondaryButton {
+  background: none;
+  box-shadow: none;
+}
+
+/* primary (Next) */
+
+.primaryButton {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #3a1f25;
+  box-shadow: 0 10px 26px rgba(255, 174, 197, 0.4);
+}
+
+.primaryButton:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+  box-shadow: 0 14px 32px rgba(255, 174, 197, 0.55);
+}
+
+.primaryButton:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 18px rgba(255, 174, 197, 0.35);
+}
+
+/* secondary (Back) */
+
+.secondaryButton {
+  background: rgba(10, 5, 10, 0.6);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.55);
+}
+
+.secondaryButton:hover {
+  transform: translateY(-1px);
+  background: rgba(20, 10, 22, 0.9);
+  border-color: rgba(255, 174, 197, 0.4);
+}
+
+.secondaryButton:active {
+  transform: translateY(0);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.65);
+}
+
+/* progress */
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.counter {
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0.9;
+}
+
+.dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(231, 201, 213, 0.35);
+  transition:
+    width 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease,
+    opacity 0.2s ease;
+  opacity: 0.6;
+}
+
+.dotActive {
+  width: 18px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-3));
+  transform: translateY(-1px);
+  opacity: 1;
+}
+
+/* footer note */
+
+.footerNote {
+  margin-top: 26px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  opacity: 0.85;
+}
+
+/* animation */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* responsive */
+
+@media (max-width: 640px) {
+  .reasonCard {
+    margin-top: 40px;
+    padding: 26px 18px 20px;
+  }
+
+  .title {
+    font-size: 2.2rem;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .progress {
+    order: -1;
+    margin-bottom: 6px;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
+}
