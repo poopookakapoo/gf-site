@@ -2,9 +2,52 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
+type VirtualSkyProjection = "stereo" | "polar" | "gnomic" | "ortho" | "planechart";
+
+interface VirtualSkyOptions {
+  id: string;
+  latitude: number;
+  longitude: number;
+  clock?: Date;
+  live?: boolean;
+
+  projection?: VirtualSkyProjection;
+  gradient?: boolean;
+  ground?: boolean;
+
+  showstars?: boolean;
+  magnitude?: number;
+  scalestars?: number;
+
+  constellations?: boolean;
+  constellationboundaries?: boolean;
+  constellationlabels?: boolean;
+
+  gridlines_az?: boolean;
+  gridlines_eq?: boolean;
+  ecliptic?: boolean;
+
+  showgalaxy?: boolean;
+
+  showplanets?: boolean;
+  showplanetlabels?: boolean;
+
+  mouse?: boolean;
+  keyboard?: boolean;
+  showdate?: boolean;
+  showposition?: boolean;
+
+  az?: number;
+
+  // Permit additional options without 'any'
+  [key: string]: unknown;
+}
+
+type VirtualSkyFn = (opts: VirtualSkyOptions) => unknown;
+
 declare global {
   interface Window {
-    S?: { virtualsky: (opts: Record<string, any>) => any };
+    S?: { virtualsky: VirtualSkyFn };
   }
 }
 
@@ -18,12 +61,17 @@ type Place = {
 
 function loadScript(src: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const existing = document.querySelector(`script[src="${src}"]`) as HTMLScriptElement | null;
+    const existing = document.querySelector(
+      `script[src="${src}"]`,
+    ) as HTMLScriptElement | null;
+
     if (existing) {
       existing.addEventListener("load", () => resolve());
-      existing.addEventListener("error", () => reject(new Error(`Failed to load ${src}`)));
+      existing.addEventListener("error", () =>
+        reject(new Error(`Failed to load ${src}`)),
+      );
       // If it already loaded earlier:
-      if ((existing as any).dataset.loaded === "true") resolve();
+      if (existing.dataset.loaded === "true") resolve();
       return;
     }
 
@@ -31,7 +79,7 @@ function loadScript(src: string): Promise<void> {
     s.src = src;
     s.async = false; // preserve order
     s.onload = () => {
-      (s as any).dataset.loaded = "true";
+      s.dataset.loaded = "true";
       resolve();
     };
     s.onerror = () => reject(new Error(`Failed to load ${src}`));
@@ -54,10 +102,6 @@ export default function VirtualSkyPanel({ place }: { place: Place }) {
         // These must exist under /public/virtualsky/
         await loadScript("/virtualsky/stuquery.min.js");
         await loadScript("/virtualsky/virtualsky.min.js");
-        // Only if you actually have this file; otherwise remove the line
-        // Some VirtualSky builds include planets in the main bundle.
-        // If you have it, keep it:
-        // await loadScript("/virtualsky/virtualsky-planets.js");
 
         if (!cancelled) setReady(true);
       } catch (e) {
@@ -76,7 +120,9 @@ export default function VirtualSkyPanel({ place }: { place: Place }) {
     if (initialised.current) return;
 
     if (!window.S?.virtualsky) {
-      console.error("VirtualSky did not expose window.S.virtualsky. Check script paths and files.");
+      console.error(
+        "VirtualSky did not expose window.S.virtualsky. Check script paths and files.",
+      );
       return;
     }
 
@@ -85,52 +131,47 @@ export default function VirtualSkyPanel({ place }: { place: Place }) {
     el.innerHTML = "";
 
     window.S.virtualsky({
-  id: containerId,
-  latitude: place.lat,
-  longitude: place.lon,
-  clock,
-  live: false,
+      id: containerId,
+      latitude: place.lat,
+      longitude: place.lon,
+      clock,
+      live: false,
 
-  projection: "stereo",
-  gradient: true,
-  ground: true,
+      projection: "stereo",
+      gradient: true,
+      ground: true,
 
-  // Stars: keep, but not too dense
-  showstars: true,
-  magnitude: 5.8,       // fewer faint stars than 6.5
-  scalestars: 1.35,     // slightly bigger stars (easier to read)
+      // Stars: keep, but not too dense
+      showstars: true,
+      magnitude: 5.8, // fewer faint stars than 6.5
+      scalestars: 1.35, // slightly bigger stars (easier to read)
 
-  // Constellations: turn OFF the boundary clutter, keep only simple stick figures OR none
-  constellations: true,
-  constellationboundaries: false, // IMPORTANT if supported by your build
-  constellationlabels: true,       // show names like “Orion” (helpful)
-  // If labels feel too busy, set to false and use our own overlay text
+      // Constellations: reduce clutter
+      constellations: true,
+      constellationboundaries: false,
+      constellationlabels: true,
 
-  // Remove extra reference lines that confuse people (if supported)
-  gridlines_az: false,
-  gridlines_eq: false,
-  ecliptic: false,
+      // Remove extra reference lines
+      gridlines_az: false,
+      gridlines_eq: false,
+      ecliptic: false,
 
-  // Galaxy: turn down or off (can look like “noise”)
-  showgalaxy: false,
+      // Galaxy: turn down or off
+      showgalaxy: false,
 
-  // Planets: keep + label (these are the most intuitive anchors)
-  showplanets: true,
-  showplanetlabels: true,
+      // Planets
+      showplanets: true,
+      showplanetlabels: true,
 
-  // Moon/Sun are intuitive; keep them visible and labelled
-  // (VirtualSky includes them with planets in many builds)
+      // Make it feel like “a view”, not a chart
+      mouse: true,
+      keyboard: false,
+      showdate: false,
+      showposition: false,
 
-  // Make it feel like “a view”, not a chart
-  mouse: true,
-  keyboard: false,
-  showdate: false,      // you already show the time in your modal header
-  showposition: false,
-
-  // Orient roughly “south” by default
-  az: 180,
-});
-
+      // Orient roughly “south” by default
+      az: 180,
+    });
 
     initialised.current = true;
   }, [ready, containerId, place.lat, place.lon, clock]);

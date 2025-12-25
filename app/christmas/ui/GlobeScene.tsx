@@ -4,6 +4,7 @@ import * as THREE from "three";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 
 type Place = {
   id: "me" | "her";
@@ -50,7 +51,7 @@ function Scene({
   const earthGroupRef = useRef<THREE.Group>(null);
 
   // Orbit controls (disabled during flight)
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const isFlyingRef = useRef(false);
 
   const [hovered, setHovered] = useState<Place["id"] | null>(null);
@@ -94,7 +95,11 @@ function Scene({
 
       camera.position.lerpVectors(flight.fromPos, flight.toPos, k);
 
-      const look = new THREE.Vector3().lerpVectors(flight.fromLook, flight.toLook, k);
+      const look = new THREE.Vector3().lerpVectors(
+        flight.fromLook,
+        flight.toLook,
+        k,
+      );
       camera.lookAt(look);
 
       if (flight.t >= 1) {
@@ -155,15 +160,15 @@ function Scene({
         </mesh>
 
         {/* Pins (children of the rotating group) */}
-        {markers.map(({ place, pos }) => (
+        {markers.map((m) => (
           <Pin
-            key={place.id}
-            place={place}
-            pos={pos}
+            key={m.place.id}
+            place={m.place}
+            pos={m.pos}
             earthGroupRef={earthGroupRef}
-            hovered={hovered === place.id}
-            setHovered={(v) => setHovered(v ? place.id : null)}
-            onSelect={() => flyTo(place)}
+            hovered={hovered === m.place.id}
+            setHovered={(v) => setHovered(v ? m.place.id : null)}
+            onSelect={() => flyTo(m.place)}
           />
         ))}
       </group>
@@ -203,7 +208,6 @@ function Pin({
 
   useFrame(() => {
     // Optional realism: hide pins on the far side of the Earth.
-    // This avoids “floating in space” impressions near the limb.
     const g = earthGroupRef.current;
     const pin = groupRef.current;
     if (!g || !pin) return;
