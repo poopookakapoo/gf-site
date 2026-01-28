@@ -289,7 +289,7 @@ export default function Page() {
         <BouquetIllustration />
 
         {/* Replace with your own text */}
-        <h1 className={styles.title}>I'm Sorry :(</h1>
+        <h1 className={styles.title}>I am really Sorry :(</h1>
         <p className={styles.message}>
           You genuinely have all the right to be upset at me because i truly messed up with that message. Please Baby believe me, i totally didnt mean it. You are literally more capable than me in comunicating and I have no excuses. I try to make you the happiest girl in the world and I see you trying as hard as u can with me and I let you down like this :(. I love you more than anything in this world baby and I just cant let myself do this to you and I truly feel horrible.
         </p>
