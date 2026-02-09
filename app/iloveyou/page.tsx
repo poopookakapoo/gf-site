@@ -23,6 +23,9 @@ type FlowerProps = {
   scale?: number;
   c1: string;
   c2: string;
+  c3: string;
+  c4: string;
+  c5: string:
   center: string;
   center2?: string;
   opacity?: number;
@@ -289,10 +292,9 @@ export default function Page() {
         <BouquetIllustration />
 
         {/* Replace with your own text */}
-        <h1 className={styles.title}>I am really Sorry :(</h1>
+        <h1 className={styles.title}>I LOVE YOU</h1>
         <p className={styles.message}>
-          You genuinely have all the right to be upset at me because i truly messed up with that message. Please Baby believe me, i totally didnt mean it. You are literally more capable than me in comunicating and I have no excuses. I try to make you the happiest girl in the world and I see you trying as hard as u can with me and I let you down like this :(. I love you more than anything in this world baby and I just cant let myself do this to you and I truly feel horrible.
-        </p>
+          I love you for eternity my sweet baby princess. You mean the entire world to me. I wanna be your husband my sweet baby princess. I wanna protect this amazing girl and love you forever. You mean the entire world to me baby. I can't wait to marry you and be happy forever.
       </section>
     </main>
   );
