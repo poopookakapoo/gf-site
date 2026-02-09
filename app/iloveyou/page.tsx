@@ -293,7 +293,7 @@ export default function Page() {
         {/* Replace with your own text */}
         <h1 className={styles.title}>I LOVE YOU</h1>
         <p className={styles.message}>
-          I love you for eternity my sweet baby princess. You mean the entire world to me. I wanna be your husband my sweet baby princess. I wanna protect this amazing girl and love you forever. You mean the entire world to me baby. I can't wait to marry you and be happy forever.
+          I love you for eternity my sweet baby princess. You mean the entire world to me. I wanna be your husband my sweet baby princess. I wanna protect this amazing girl and love you forever. You mean the entire world to me baby. I cant wait to marry you and be happy forever.
         </p>  
       </section>
     </main>
