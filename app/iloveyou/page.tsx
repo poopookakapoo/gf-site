@@ -23,8 +23,6 @@ type FlowerProps = {
   scale?: number;
   c1: string;
   c2: string;
-  c3: string;
-  c4: string;
   center: string;
   center2?: string;
   opacity?: number;
