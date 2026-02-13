@@ -1,0 +1,489 @@
+.page {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji",
+    "Segoe UI Emoji";
+  color: rgba(28, 20, 30, 0.92);
+}
+
+/* Soft animated background */
+.background {
+  position: absolute;
+  inset: -20%;
+  z-index: -2;
+  background:
+    radial-gradient(60% 60% at 20% 20%, rgba(255, 182, 213, 0.55), transparent 60%),
+    radial-gradient(55% 55% at 80% 25%, rgba(207, 196, 255, 0.55), transparent 62%),
+    radial-gradient(60% 60% at 30% 85%, rgba(255, 223, 242, 0.60), transparent 60%),
+    radial-gradient(55% 55% at 75% 80%, rgba(193, 240, 255, 0.45), transparent 62%),
+    linear-gradient(135deg, rgba(255, 244, 249, 1), rgba(246, 247, 255, 1));
+  filter: blur(0px);
+  animation: drift 14s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  0% {
+    transform: translate3d(-1.2%, -1.0%, 0) scale(1.02);
+  }
+  100% {
+    transform: translate3d(1.2%, 1.0%, 0) scale(1.04);
+  }
+}
+
+/* Card */
+.card {
+  width: min(720px, 92vw);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-radius: 24px;
+  box-shadow:
+    0 30px 80px rgba(28, 20, 30, 0.12),
+    0 8px 24px rgba(28, 20, 30, 0.10);
+  backdrop-filter: blur(10px);
+  padding: 34px 28px;
+  position: relative;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.kicker {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(75, 55, 92, 0.75);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.8rem, 3.6vw, 2.7rem);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  margin: 10px 0 0;
+  font-size: 1rem;
+  color: rgba(60, 44, 74, 0.72);
+}
+
+.prompt {
+  margin: 22px auto 14px;
+  position: relative;
+  padding: 16px 16px;
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(255, 222, 238, 0.45), rgba(216, 209, 255, 0.32));
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  overflow: hidden;
+}
+
+.note {
+  margin: 0;
+  text-align: center;
+  font-size: 1rem;
+  color: rgba(48, 34, 60, 0.86);
+}
+
+/* Sparkles */
+.sparkles {
+  position: absolute;
+  inset: -40%;
+  opacity: 0.9;
+  background:
+    radial-gradient(circle at 15% 35%, rgba(255, 255, 255, 0.85) 0 2px, transparent 3px),
+    radial-gradient(circle at 35% 20%, rgba(255, 255, 255, 0.75) 0 2px, transparent 3px),
+    radial-gradient(circle at 60% 30%, rgba(255, 255, 255, 0.80) 0 2px, transparent 3px),
+    radial-gradient(circle at 80% 55%, rgba(255, 255, 255, 0.70) 0 2px, transparent 3px),
+    radial-gradient(circle at 25% 70%, rgba(255, 255, 255, 0.75) 0 2px, transparent 3px);
+  animation: sparkle 3.6s ease-in-out infinite alternate;
+}
+
+@keyframes sparkle {
+  0% { transform: translate3d(-1%, -1%, 0) scale(1); filter: blur(0px); }
+  100% { transform: translate3d(1%, 1%, 0) scale(1.03); filter: blur(0.2px); }
+}
+
+/* Buttons */
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 18px;
+  align-items: center;
+  justify-items: center;
+  position: relative;
+}
+
+.actions button,
+.primaryLink {
+  width: min(280px, 90%);
+  border-radius: 999px;
+  padding: 14px 18px;
+  font-size: 1.05rem;
+  border: 1px solid rgba(20, 12, 28, 0.10);
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+  box-shadow: 0 10px 20px rgba(28, 20, 30, 0.10);
+  user-select: none;
+}
+
+.actions button:focus-visible,
+.primaryLink:focus-visible {
+  outline: 3px solid rgba(170, 120, 255, 0.45);
+  outline-offset: 3px;
+}
+
+.yes {
+  background: linear-gradient(135deg, rgba(255, 92, 170, 0.90), rgba(255, 149, 196, 0.92));
+  color: white;
+}
+
+.yes:hover {
+  transform: translateY(-1px) scale(1.01);
+  box-shadow: 0 14px 26px rgba(255, 92, 170, 0.22);
+}
+
+.no {
+  background: rgba(255, 255, 255, 0.85);
+  color: rgba(48, 34, 60, 0.88);
+  position: relative;
+}
+
+.no:hover {
+  transform: translateY(-1px);
+}
+
+.footer {
+  margin-top: 18px;
+  text-align: center;
+}
+
+.footerText {
+  margin: 0;
+  font-size: 0.95rem;
+  color: rgba(60, 44, 74, 0.68);
+}
+
+.gentleHint {
+  margin: 10px 0 0;
+  font-size: 0.92rem;
+  color: rgba(60, 44, 74, 0.76);
+}
+
+/* Floating hearts */
+.hearts {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.heart {
+  position: absolute;
+  bottom: -40px;
+  transform: rotate(45deg);
+  background: rgb(255, 105, 180);
+  animation-name: floatUp;
+  animation-timing-function: ease-in;
+  animation-iteration-count: infinite;
+  border-radius: 4px;
+  filter: blur(0px);
+}
+
+.heart::before,
+.heart::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: inherit;
+  border-radius: 50%;
+}
+
+.heart::before {
+  left: -50%;
+  top: 0;
+}
+
+.heart::after {
+  left: 0;
+  top: -50%;
+}
+
+.heartSvg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: rgba(255, 88, 164, 0.95);
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(45deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(0, -120svh, 0) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+/* Success overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 12, 28, 0.35);
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  z-index: 10;
+}
+
+.modal {
+  width: min(560px, 92vw);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.70);
+  border-radius: 22px;
+  padding: 26px 20px;
+  box-shadow: 0 30px 90px rgba(28, 20, 30, 0.18);
+  position: relative;
+  overflow: hidden;
+}
+
+.modalArt {
+  width: min(280px, 70vw);
+  margin: 8px auto 14px;
+  transform-origin: 50% 100%;
+  animation:
+    bouquetReveal 650ms cubic-bezier(0.2, 0.85, 0.25, 1) both,
+    bouquetFloat 3.2s ease-in-out 650ms infinite alternate;
+}
+
+.bouquetSvg {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 10px 24px rgba(28, 20, 30, 0.18));
+}
+
+@keyframes bouquetReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.84) rotate(-2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+}
+
+@keyframes bouquetFloat {
+  from { transform: translateY(0px); }
+  to { transform: translateY(-7px); }
+}
+
+@keyframes bouquetDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes bouquetFillIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 1.7rem;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+.modalText {
+  margin: 10px 0 0;
+  text-align: center;
+  color: rgba(48, 34, 60, 0.82);
+  font-size: 1.05rem;
+}
+
+.modalActions {
+  margin-top: 18px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.secondary {
+  background: rgba(255, 255, 255, 0.9);
+  color: rgba(48, 34, 60, 0.88);
+}
+
+.secondary:hover {
+  transform: translateY(-1px);
+}
+
+.primaryLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  background: linear-gradient(135deg, rgba(170, 120, 255, 0.92), rgba(255, 130, 194, 0.90));
+  color: white;
+}
+
+.primaryLink:hover {
+  transform: translateY(-1px) scale(1.01);
+  box-shadow: 0 14px 28px rgba(170, 120, 255, 0.20);
+}
+
+.modalFinePrint {
+  margin: 14px 0 0;
+  text-align: center;
+  font-size: 0.92rem;
+  color: rgba(60, 44, 74, 0.66);
+}
+
+/* Confetti (pure CSS, lightweight) */
+.confetti {
+  position: absolute;
+  inset: -20% 0 auto 0;
+  height: 220px;
+  pointer-events: none;
+}
+
+.confettiPiece {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 10px;
+  height: 16px;
+  border-radius: 3px;
+  opacity: 0.85;
+  transform: translateX(-50%);
+  animation: confettiFall 1.2s ease-in infinite;
+}
+
+/* Stagger pieces deterministically */
+.confettiPiece:nth-child(1)  { left: 8%;  animation-delay: 0.00s; background: rgba(255, 92, 170, 0.75); }
+.confettiPiece:nth-child(2)  { left: 16%; animation-delay: 0.05s; background: rgba(170, 120, 255, 0.75); }
+.confettiPiece:nth-child(3)  { left: 24%; animation-delay: 0.10s; background: rgba(255, 185, 220, 0.75); }
+.confettiPiece:nth-child(4)  { left: 32%; animation-delay: 0.15s; background: rgba(120, 210, 255, 0.70); }
+.confettiPiece:nth-child(5)  { left: 40%; animation-delay: 0.20s; background: rgba(255, 130, 194, 0.75); }
+.confettiPiece:nth-child(6)  { left: 48%; animation-delay: 0.25s; background: rgba(193, 240, 255, 0.72); }
+.confettiPiece:nth-child(7)  { left: 56%; animation-delay: 0.30s; background: rgba(207, 196, 255, 0.75); }
+.confettiPiece:nth-child(8)  { left: 64%; animation-delay: 0.35s; background: rgba(255, 223, 242, 0.78); }
+.confettiPiece:nth-child(9)  { left: 72%; animation-delay: 0.40s; background: rgba(255, 92, 170, 0.70); }
+.confettiPiece:nth-child(10) { left: 80%; animation-delay: 0.45s; background: rgba(170, 120, 255, 0.70); }
+.confettiPiece:nth-child(11) { left: 88%; animation-delay: 0.50s; background: rgba(120, 210, 255, 0.70); }
+.confettiPiece:nth-child(12) { left: 92%; animation-delay: 0.55s; background: rgba(255, 130, 194, 0.70); }
+
+/* Repeat the pattern to cover 24 pieces */
+.confettiPiece:nth-child(n + 13) { animation-duration: 1.35s; }
+.confettiPiece:nth-child(13) { left: 10%; animation-delay: 0.02s; background: rgba(255, 185, 220, 0.72); }
+.confettiPiece:nth-child(14) { left: 18%; animation-delay: 0.07s; background: rgba(207, 196, 255, 0.72); }
+.confettiPiece:nth-child(15) { left: 26%; animation-delay: 0.12s; background: rgba(193, 240, 255, 0.70); }
+.confettiPiece:nth-child(16) { left: 34%; animation-delay: 0.17s; background: rgba(255, 223, 242, 0.75); }
+.confettiPiece:nth-child(17) { left: 42%; animation-delay: 0.22s; background: rgba(255, 92, 170, 0.70); }
+.confettiPiece:nth-child(18) { left: 50%; animation-delay: 0.27s; background: rgba(170, 120, 255, 0.70); }
+.confettiPiece:nth-child(19) { left: 58%; animation-delay: 0.32s; background: rgba(120, 210, 255, 0.68); }
+.confettiPiece:nth-child(20) { left: 66%; animation-delay: 0.37s; background: rgba(255, 130, 194, 0.70); }
+.confettiPiece:nth-child(21) { left: 74%; animation-delay: 0.42s; background: rgba(255, 185, 220, 0.70); }
+.confettiPiece:nth-child(22) { left: 82%; animation-delay: 0.47s; background: rgba(207, 196, 255, 0.70); }
+.confettiPiece:nth-child(23) { left: 90%; animation-delay: 0.52s; background: rgba(193, 240, 255, 0.68); }
+.confettiPiece:nth-child(24) { left: 96%; animation-delay: 0.57s; background: rgba(255, 223, 242, 0.72); }
+
+/* Hidden until triggered (optional) */
+#bouquetWrap[hidden] { display: none; }
+
+/* Make sure transforms behave predictably inside SVG */
+#bouquet .bloom,
+#bouquet .sway {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+#bouquet .draw {
+  /* JS will set dasharray/dashoffset; keep stroke visible */
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Triggered animations */
+#bouquet.go .draw {
+  animation: draw 2.2s ease forwards;
+}
+
+#bouquet.go .bloom {
+  opacity: 0;
+  transform: scale(0.85);
+  animation: bloom 700ms ease forwards;
+  animation-delay: var(--d, 0s);
+}
+
+#bouquet .sway {
+  transform-origin: 50% 100%;
+}
+
+#bouquet.go .sway {
+  animation: sway 3.6s ease-in-out 0.2s infinite alternate;
+}
+
+/* Keyframes */
+@keyframes draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes bloom {
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes sway {
+  from { transform: rotate(-1.2deg); }
+  to   { transform: rotate( 1.2deg); }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  #bouquet * { animation: none !important; }
+}
+
+
+@keyframes confettiFall {
+  0% {
+    transform: translate(-50%, -10px) rotate(0deg);
+    opacity: 0;
+  }
+  10% { opacity: 0.9; }
+  100% {
+    transform: translate(-50%, 240px) rotate(220deg);
+    opacity: 0;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .background,
+  .sparkles,
+  .heart,
+  .confettiPiece,
+  .modalArt {
+    animation: none !important;
+  }
+
+  .actions button,
+  .primaryLink {
+    transition: none;
+  }
+}
